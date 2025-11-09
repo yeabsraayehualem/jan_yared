@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:jan_yared/models/attendanceModel.dart';
+import 'package:jan_yared/providors/attendance_providor.dart';
+import 'package:jan_yared/providors/auth_providor.dart';
+import 'package:provider/provider.dart';
 import 'login_page.dart';
 import 'dashboard_page.dart';
-import 'leave_page.dart';
 import 'qr_scanner_page.dart';
 
 class AttendancePage extends StatefulWidget {
@@ -12,7 +15,53 @@ class AttendancePage extends StatefulWidget {
 }
 
 class _AttendancePageState extends State<AttendancePage> {
-  int _selectedIndex = 1; // Attendance is selected
+  int _selectedIndex = 1;
+  double absent_days = 0.0,
+      present_days = 0.0,
+      onleave_days = 0.0,
+      total_hours = 0.0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadAttendance();
+  }
+
+  Future<void> _loadAttendance() async {
+    try {
+      // Get providers
+      final attendanceProvider = Provider.of<AttendanceProvider>(
+        context,
+        listen: false,
+      );
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+
+      if (auth.user == null || auth.sessionId == null) return;
+
+      // Call the async method
+      final data = await attendanceProvider.getAttendances(
+        employee_id:
+            auth.user!.employeeId, // make sure to use auth.user!.employeeId
+        session_id: auth.sessionId!,
+      );
+
+      if (data.isEmpty) return;
+
+      // Convert the first item into a summary model
+      final attendanceSummary = data[0];
+
+      // Now you can use attendanceSummary to update state
+      setState(() {
+        // For example:
+        absent_days = attendanceSummary.totalAbsent.toDouble();
+        present_days = attendanceSummary.totalPresent.toDouble();
+        onleave_days = attendanceSummary.totalOnLeave.toDouble();
+        total_hours = attendanceSummary.totalWorkedHours.toDouble();
+      });
+    } catch (e) {
+      debugPrint("Error loading attendance: $e");
+    }
+  }
 
   void _handleLogout() {
     Navigator.of(context).pushAndRemoveUntil(
@@ -30,7 +79,7 @@ class _AttendancePageState extends State<AttendancePage> {
     } else if (index == 2) {
       // Navigate to Leave page
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LeavePage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
     } else {
       setState(() {
@@ -40,11 +89,9 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   void _handleScanQRCode() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const QRScannerPage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const QRScannerPage()));
   }
 
   @override
@@ -68,10 +115,7 @@ class _AttendancePageState extends State<AttendancePage> {
               padding: const EdgeInsets.all(6),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: Image.asset(
-                  'assets/logo.jpg',
-                  fit: BoxFit.contain,
-                ),
+                child: Image.asset('assets/logo.jpg', fit: BoxFit.contain),
               ),
             ),
             const SizedBox(width: 12),
@@ -102,10 +146,7 @@ class _AttendancePageState extends State<AttendancePage> {
             // Logout Button
             IconButton(
               onPressed: _handleLogout,
-              icon: const Icon(
-                Icons.logout,
-                color: Color(0xFF333333),
-              ),
+              icon: const Icon(Icons.logout, color: Color(0xFF333333)),
             ),
           ],
         ),
@@ -131,10 +172,7 @@ class _AttendancePageState extends State<AttendancePage> {
                   const SizedBox(height: 4),
                   Text(
                     'Track your attendance and hours',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
               ),
@@ -229,7 +267,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Monthly Report',
+                    'Attendance Report',
                     style: TextStyle(
                       color: Color(0xFF333333),
                       fontSize: 20,
@@ -245,7 +283,7 @@ class _AttendancePageState extends State<AttendancePage> {
                         child: _buildStatCard(
                           icon: Icons.access_time,
                           iconColor: const Color(0xFF2196F3),
-                          value: '168',
+                          value: '$total_hours',
                           label: 'Total Hours',
                         ),
                       ),
@@ -255,7 +293,7 @@ class _AttendancePageState extends State<AttendancePage> {
                         child: _buildStatCard(
                           icon: Icons.check_circle,
                           iconColor: const Color(0xFF4CAF50),
-                          value: '21',
+                          value: '$present_days',
                           label: 'Present Days',
                         ),
                       ),
@@ -269,7 +307,7 @@ class _AttendancePageState extends State<AttendancePage> {
                         child: _buildStatCard(
                           icon: Icons.cancel,
                           iconColor: const Color(0xFFF44336),
-                          value: '2',
+                          value: '$absent_days',
                           label: 'Absent Days',
                         ),
                       ),
@@ -279,7 +317,7 @@ class _AttendancePageState extends State<AttendancePage> {
                         child: _buildStatCard(
                           icon: Icons.work_outline,
                           iconColor: const Color(0xFFFFC107),
-                          value: '1',
+                          value: '$onleave_days',
                           label: 'On Leave',
                         ),
                       ),
@@ -366,11 +404,7 @@ class _AttendancePageState extends State<AttendancePage> {
               color: iconColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 24,
-            ),
+            child: Icon(icon, color: iconColor, size: 24),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -387,10 +421,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 ),
                 Text(
                   label,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),
@@ -400,4 +431,3 @@ class _AttendancePageState extends State<AttendancePage> {
     );
   }
 }
-

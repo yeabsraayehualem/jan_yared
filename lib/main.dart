@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import 'package:jan_yared/dashboard_page.dart';
+import 'package:jan_yared/login_page.dart';
+import 'package:jan_yared/providors/attendance_providor.dart';
+import 'package:jan_yared/providors/auth_providor.dart';
+import 'package:provider/provider.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+   runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AttendanceProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Jan Yared',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
+      home: Consumer<AuthProvider>(
+        builder: (context, auth, _) {
+          return auth.isLoggedIn ? const DashboardPage() : const LoginPage();
+        },
       ),
-      home: const LoginPage(),
     );
   }
 }
