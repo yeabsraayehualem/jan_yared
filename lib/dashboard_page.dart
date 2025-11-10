@@ -70,7 +70,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     } else if (index == 2) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const AttendancePage()),
+        MaterialPageRoute(builder: (context) => const LeavePage()),
       );
     } else {
       setState(() {
@@ -185,10 +185,10 @@ class _DashboardPageState extends State<DashboardPage> {
               icon: Icon(Icons.check_circle_outline),
               label: 'Attendance',
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.description),
-              label: 'Leave',
-            ),
+            // const BottomNavigationBarItem(
+            //   icon: Icon(Icons.description),
+            //   label: 'Leave',
+            // ),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jan_yared/leave_page.dart';
 import 'package:jan_yared/models/attendanceModel.dart';
 import 'package:jan_yared/providors/attendance_providor.dart';
 import 'package:jan_yared/providors/auth_providor.dart';
@@ -71,15 +72,13 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   void _onItemTapped(int index) {
-    if (index == 0) {
-      // Navigate to Projects/Dashboard
+    if (index == 1) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const DashboardPage()),
+        MaterialPageRoute(builder: (context) => const AttendancePage()),
       );
     } else if (index == 2) {
-      // Navigate to Leave page
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const DashboardPage()),
+        MaterialPageRoute(builder: (context) => const LeavePage()),
       );
     } else {
       setState(() {
@@ -366,10 +365,10 @@ class _AttendancePageState extends State<AttendancePage> {
               ),
               label: 'Attendance',
             ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.description),
-              label: 'Leave',
-            ),
+            // BottomNavigationBarItem(
+            //   icon: const Icon(Icons.description),
+            //   label: 'Leave',
+            // ),
           ],
         ),
       ),
