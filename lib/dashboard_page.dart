@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jan_yared/PrivacyPolicyScreen.dart';
 import 'package:jan_yared/models/projectModel.dart';
 import 'package:jan_yared/models/userModel.dart';
 import 'package:jan_yared/providors/auth_providor.dart';
@@ -53,6 +54,12 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() => _loading = false);
       debugPrint("❌ Error loading projects: $e");
     }
+  }
+
+  void _handlePolicy() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
+    );
   }
 
   void _handleLogout() {
@@ -124,6 +131,10 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ],
               ),
+            ),
+            IconButton(
+              onPressed: _handlePolicy,
+              icon: const Icon(Icons.privacy_tip, color: Color(0xFF333333)),
             ),
             IconButton(
               onPressed: _handleLogout,

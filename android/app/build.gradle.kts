@@ -33,9 +33,10 @@ android {
         applicationId = "com.ejat.jan_yared" // change this to your unique package name
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+           versionCode = 3     
+    versionName = "1.0.2"
         multiDexEnabled = true
+
     }
 
     signingConfigs {

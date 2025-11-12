@@ -56,7 +56,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
       final sessionId = auth.sessionId;
       final employeeId = auth.user!.employeeId;
 
-      if (sessionId == null || employeeId == null) return;
+      if (sessionId == null ) return;
 
       final baseUrl = ApiConstants.baseUrl;
 
